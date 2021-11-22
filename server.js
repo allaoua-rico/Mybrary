@@ -9,6 +9,8 @@ const bodyParser= require('body-parser')
 
 const indexRouter = require("./routes/index.js");
 const authorsRouter = require ("./routes/authors.js");
+const booksRouter = require ("./routes/books.js");
+
 
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
@@ -19,6 +21,8 @@ app.use(bodyParser.urlencoded({limit:'10mb', extended:false}));
 
 app.use('/', indexRouter);
 app.use('/authors',authorsRouter);
+app.use('/books',booksRouter);
+
 
 const mongoose = require('mongoose');
 mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true })
