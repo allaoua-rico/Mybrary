@@ -7,7 +7,9 @@
 <% if( booksByAuthor.length > 0 ){%>
 <div>
     <% booksByAuthor.forEach(book=>{  %>
+        <a href="/books/<%=book.id%>">
         <img src="<%= book.coverImagePath %>" height="150" width="100">
+        </a>
     <%  }); %>
 </div>
 <% } %>

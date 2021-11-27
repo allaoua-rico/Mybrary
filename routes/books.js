@@ -28,7 +28,7 @@ router.get('/', async (req,res) => {
    }
 });
 router.get('/new',  async (req,res) => {
-  renderNewImage(res, new Book() );
+  renderFormImage(res,new Book(),'new', false );
 });
 router.post('/',  async (req,res) => {
     const book= new Book({
@@ -44,11 +44,73 @@ router.post('/',  async (req,res) => {
         //res.redirect(`books/${newBook.id`)
         res.redirect('books')
     }catch{
-        renderNewImage(res, book, true)
+        renderFormImage(res, book,'new', true)
     }
 });
+router.get('/:id', async (req, res)=>{
+    try{
+        const book= await Book.findById(req.params.id).
+                                populate('author').
+                                exec();
+        res.render('books/show',{book:book})
+    }catch{
+        res.render('/')
+    }
+})
 
-async function renderNewImage(res, book,hasError=false){
+router.get('/:id/edit',  async (req,res) => {
+    try{
+        const book= await Book.findById(req.params.id)
+        renderFormImage(res, book,'edit', false );
+    }catch {
+        res.redirect('/')
+    }
+  });
+router.put('/:id', async (req, res)=> {
+    let book;
+    console.log(req.params.id)
+    try{
+        book= await Book.findById(req.params.id);
+        book.author=req.body.author;
+        book.pageCount=req.body.pageCount;
+        book.publishDate=new Date(req.body.publishDate);
+        book.title=req.body.title;
+        book.description=req.body.description;
+        if (req.body.cover!=null && req.body.cover!==""){
+            saveCover(book, req.body.cover);
+        }
+        await book.save();
+        res.redirect(`/books/${book.id}`)
+    }catch(err){
+        console.log(err)
+        if (book != null) {
+            renderFormImage(res, book, 'edit', true)
+        }
+        else{
+            res.redirect('/')
+            
+        }
+    }
+  });
+router.delete('/:id', async (req,res)=>{
+    let book;
+    try{
+        book= await Book.findById(req.params.id);
+        await book.remove();
+        res.redirect('/')
+    }catch{
+        if(book!= null){
+            res.render('books/show',{
+                book:book,
+                errorMessage:'error removing the book'
+            })
+        }
+        else{
+            res.redirect('/')
+        }
+    }
+})
+async function renderFormImage(res, book, form ,hasError=false){
     try{
         const authors = await Author.find({});
         const params={
@@ -57,7 +119,7 @@ async function renderNewImage(res, book,hasError=false){
         };
         if (hasError) params.errorMessage='Error creating book';
 
-        res.render('books/new',params)
+        res.render(`books/${form}`,params)
     }catch{
         res.redirect('books/')
     }
