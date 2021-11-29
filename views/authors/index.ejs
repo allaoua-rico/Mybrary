@@ -7,19 +7,20 @@
         </div>
         </div>
     <div class="form-row form-row-end">
-        <button class="btn-primary btn" type="submit">search</button>
+        <button class="btn-primary btn" type="submit">Search</button>
     </div>
 </form>
 <br> 
 
 
 <% authors.forEach(author=>{  %>
-        <div><%= author.name%></div>
-
+    <div class="author-row">
+        <div class="author-name"><%= author.name%></div>
         <div class="btn-row">
         <a class='btn btn-primary' href="/authors/<%= author.id%>">View</a>
         <a class='btn btn-primary' href="/authors/<%= author.id%>/edit">Edit</a>
         <%- include('../partials/deleteForm',
             { url: `/authors/${author.id}` }) %>
         </div>
+    </div>
         <%  }); %>
